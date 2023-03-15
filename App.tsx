@@ -2,16 +2,20 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import { Provider } from 'react-redux';
-import { store } from './src/redux/store';
+import { Provider, useSelector } from 'react-redux';
+import { store, getCategory, getFields } from './src/redux/store';
 
 //screens
 import Dashboard from './src/screens/dashboard/Dashboard';
 import ManageCategory from './src/screens/manage/ManageCategory';
+//import Categories from './src/screens/categories/Categories';
 
 const Drawer = createDrawerNavigator();
 
 const App = () => {
+  //const category = useSelector(getCategory);
+  //const fields = useSelector(getFields);
+  
   return (
     <>
       <StatusBar style="dark" />
@@ -30,6 +34,12 @@ const App = () => {
               component={ManageCategory}
               options={{ title: 'Manage Categories'}} 
             />
+
+            {/* <Drawer.Screen 
+              name="Categories" 
+              component={Categories}
+              options={{ title: category}} 
+            /> */}
           </Drawer.Navigator>
         </NavigationContainer>
       </Provider>

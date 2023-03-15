@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
 import { TextInput, Menu, Divider, Provider} from "react-native-paper";
 import CustomButton from "./buttons";
 import { colors } from "../constants";
 import Text from "./text";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MaterialIcons } from "@expo/vector-icons";
 import { addField, deleteField } from "../redux/categorySlice";
+import { addCategory, getCategory, getFields } from "../redux/store";
 
 
 export type CategoryFormProps = {
@@ -17,49 +18,44 @@ export type CategoryFormProps = {
 const CategoryForm: React.FC<CategoryFormProps> = ({ onSubmit, onDelete }) => {
   const [categoryName, setCategoryName] = useState("");
   const [typedName, setTypedName] = useState("");
+  const [firstFieldTyped, setfirstFieldTyped] = useState("");
   const [fieldTyped, setFieldTyped] = useState("");
   const [visible, setVisible] = React.useState(false);
   const [fields, setFields] = useState<{ title: string; id: number }[]>([]);
   const dispatch = useDispatch();
+  const store_categroy = useSelector(getCategory);
+  const  store_fields = useSelector(getFields);
 
 
-  // const handleSubmit = () => {
-  //   onSubmit(categoryName, field);
-  // };
-
-  useEffect(() => {
-    if (visible && !fieldTyped) {
-      setFieldTyped(fields[fields.length - 1]?.title ?? "");
-    }
-  }, [visible]);
-
-  const handleNameChange = (text: string) => {
+  const handleNameChange = ((text: string) => {
     setTypedName(text);
     setCategoryName(text);
-  };
+    dispatch(addCategory({name: text}));
+  });
 
-  const handleFieldChange = (text: string, fieldId: number) => {
-    setFields(fields.map((field) => {
-      if (field.id === fieldId) {
-        return {
-          ...field,
-          title: text,
-        };
-      }
-      return field;
-    }));
-  };
+
+
+  const handleFieldChange = ((text: string) => {
+    if(fields.length === 1){
+      setFieldTyped(text);    
+      setfirstFieldTyped(fieldTyped);
+    } 
+    setFieldTyped(text);    
+
+
+  });
 
   const handleDelete = () => {
     onDelete();
   };
 
-  const handleAddField = (fieldType: string, title: string) => {
+  const handleAddField = ((title: string) => {
     const newField = { title, id: Date.now() };
-    setFields([...fields, newField]);
+    setFields((fields)=> [...fields, newField]);
     dispatch(addField(newField));
     setVisible(false);
-  };
+
+  });
 
   const onDeleteField = (id: number) => {
     setFields(fields.filter((field) => field.id !== id));
@@ -88,7 +84,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ onSubmit, onDelete }) => {
               label={"Field"}
               mode="outlined"
               style={styles.inputStyle}
-              onChangeText={handleFieldChange}
+              onChange={(event: NativeSyntheticEvent<TextInputChangeEventData>) => handleFieldChange(event.nativeEvent.text)}
             />
             <View style={styles.iconTextWrapper}>
               <View style={styles.textWarpper}>
@@ -106,7 +102,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ onSubmit, onDelete }) => {
         ))}
 
         <View style={styles.spacing}/>
-        <CustomButton onPress={false} width={310}>TITLE FIELD: {fieldTyped}</CustomButton>
+        <CustomButton onPress={()=> {}} width={310}>TITLE FIELD: {firstFieldTyped}</CustomButton>
 
         <View style={styles.buttonWrapper}>
           <View>
@@ -114,13 +110,13 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ onSubmit, onDelete }) => {
               visible={visible}
               onDismiss={closeMenu}
               anchor={<CustomButton onPress={openMenu} width={150}>Add New field</CustomButton>}>
-              <Menu.Item onPress={() => handleAddField("Field", "Text")} title="Text"/>
+              <Menu.Item onPress={() => handleAddField("Text")} title="Text"/>
               <Divider />
-              <Menu.Item onPress={() => handleAddField("Field", "Checkbox")} title="Checkbox" />
+              <Menu.Item onPress={() => handleAddField("Checkbox")} title="Checkbox" />
               <Divider />
-              <Menu.Item onPress={() => handleAddField("Field", "Date")} title="Date" />
+              <Menu.Item onPress={() => handleAddField("Date")} title="Date" />
               <Divider />
-              <Menu.Item onPress={() => handleAddField("Field", "Number")} title="Number" />
+              <Menu.Item onPress={() => handleAddField("Number")} title="Number" />
             </Menu>
           </View>
           <CustomButton onPress={handleDelete} width={150} color={colors.red}>Remove</CustomButton>
@@ -181,4 +177,5 @@ const styles = StyleSheet.create({
   }
 })
 
-export default CategoryForm;
+export default CategoryForm;;
+

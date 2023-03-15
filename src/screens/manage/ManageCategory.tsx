@@ -1,26 +1,30 @@
 import react, {useState} from "react";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import styles from "./styles";
 import Text from "../../components/text";
 import CustomButton from "../../components/buttons";
 import CategoryForm from "../../components/categoryForm";
+import { useDispatch } from "react-redux";
 
 const ManageCategory = () => {
-  const [showForm, setShowForm] = useState(false);
+  let [showForm, setShowForm] = useState(false);
+  let [formCounter, setFormCounter] = useState(1);
+  
+  const dispatch = useDispatch();
 
   const handlePress = () => {
-    setShowForm(true);
+    setShowForm(!showForm);
+    setFormCounter((prevCounter) => prevCounter + 1);
   };
-
+  
   const handleSubmit = (name: string, field: string) => {
-    // Do something with the form data
-    setShowForm(false);
+    setShowForm(!showForm);
   };
 
   const handleDelete = () => {
-    setShowForm(false);
+    setShowForm(!showForm);
   };
-
+  
   return (
     <View style={styles.container}>
       {showForm ? (

@@ -9,6 +9,11 @@ interface CategoryFormState {
   fields: { title: string; id: number }[];
 }
 
+
+interface RootState {
+  category: CategoryFormState;
+}
+
 const initialState: CategoryFormState = {
   categoryName: '',
   typedName: '',
@@ -37,7 +42,9 @@ const categoryFormSlice = createSlice({
       state.fields = action.payload;
     },
     addField: (state, action: PayloadAction<{ title: string; id: number }>) => {
+      
       state.fields.push(action.payload);
+      
     },
     removeField: (state, action: PayloadAction<number>) => {
       state.fields = state.fields.filter((field) => field.id !== action.payload);
@@ -48,6 +55,9 @@ const categoryFormSlice = createSlice({
       state.fieldTyped = '';
       state.visible = false;
       state.fields = [];
+    },
+    addCategory: (state, action: PayloadAction<{ name: string}>) => {
+      state.categoryName = action.payload.name;
     },
   },
 });
@@ -60,6 +70,7 @@ export const {
   setFields,
   addField,
   removeField,
+  addCategory,
   resetForm,
 } = categoryFormSlice.actions;
 
@@ -72,3 +83,11 @@ export const getCategoryFormState = (state: { categoryForm: CategoryFormState })
   onDelete: () => console.log('delete'),
   ...state.categoryForm,
 });
+
+export const getCategory = (state: CategoryFormState) => state.categoryName;
+
+export const getFields = (state: CategoryFormState) => state.fields;
+
+
+
+
